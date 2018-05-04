@@ -1,8 +1,8 @@
-#include <Arduino.h>
-#include "EasyTransfer.h"
-
 #ifndef IMU_H_
 #define IMU_H_
+
+#include <Arduino.h>
+#include "EasyTransfer.h"
 
 // default settings, call setup to change these
 #define _IMU_SERIAL &Serial2

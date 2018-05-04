@@ -1,11 +1,11 @@
+#ifndef DomeMovement_H_
+#define DomeMovement_H_
+
 #include <Arduino.h>
 #include <ArduinoLog.h>
 
 #include "MovementUtils.h"
 #include "VarSpeedServo.h"
-
-#ifndef DomeMovement_H_
-#define DomeMovement_H_
 
 //#define DEBUG_DOME_MOVEMENT
 
