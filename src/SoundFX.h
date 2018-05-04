@@ -1,9 +1,9 @@
+#ifndef SFX_H_
+#define SFX_H_
+
 #include "Adafruit_Soundboard.h"
 #include "Arduino.h"
 #include "Stream.h"
-
-#ifndef SFX_H_
-#define SFX_H_
 
 // default settings, call setup to change these
 #define _SFX_RST 37

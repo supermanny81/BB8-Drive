@@ -1,11 +1,11 @@
+#ifndef Drive_H_
+#define Drive_H_
+
 #include <Arduino.h>
 #include <ArduinoLog.h>
 #include <PID_v1.h>
 
 #include "MovementUtils.h"
-
-#ifndef Drive_H_
-#define Drive_H_
 
 #define DEBUG_DRIVE_MOVEMENT
 
