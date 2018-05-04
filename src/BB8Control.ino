@@ -54,6 +54,7 @@ void setup() {
   Log.notice(F("BB8 Drive Control Started...\n"));
 
 }
+
 void loop() {
   usb.Task();
   voltage->sample();
@@ -77,7 +78,14 @@ void loop() {
           dome.setDomeSpin(0);
         }
         // DOME XY and DRIVE
-        if (xbox.getAnalogHat(LeftHatX, i) > 7500 || xbox.getAnalogHat(LeftHatX, i) < -7500 || xbox.getAnalogHat(LeftHatY, i) > 7500 || xbox.getAnalogHat(LeftHatY, i) < -7500 || xbox.getAnalogHat(RightHatX, i) > 7500 || xbox.getAnalogHat(RightHatX, i) < -7500 || xbox.getAnalogHat(RightHatY, i) > 7500 || xbox.getAnalogHat(RightHatY, i) < -7500) {
+        if (xbox.getAnalogHat(LeftHatX, i) > 7500 ||
+            xbox.getAnalogHat(LeftHatX, i) < -7500 ||
+            xbox.getAnalogHat(LeftHatY, i) > 7500 ||
+            xbox.getAnalogHat(LeftHatY, i) < -7500 ||
+            xbox.getAnalogHat(RightHatX, i) > 7500 ||
+            xbox.getAnalogHat(RightHatX, i) < -7500 ||
+            xbox.getAnalogHat(RightHatY, i) > 7500 ||
+            xbox.getAnalogHat(RightHatY, i) < -7500) {
           int16_t lx = 0, ly =0, rx = 0, ry = 0;
           if (xbox.getAnalogHat(LeftHatX, i) > 7500 || xbox.getAnalogHat(LeftHatX, i) < -7500) {
             lx = xbox.getAnalogHat(LeftHatX, i);
@@ -122,6 +130,7 @@ void loop() {
           dome.setDomeXY(0, 0);
           drive.setSpeed(0);
         }
+
         if (xbox.getButtonClick(UP, i)) {
           xbox.setLedOn(LED1, i);
           Serial.println(F("Up"));
@@ -138,8 +147,14 @@ void loop() {
           xbox.setLedOn(LED2, i);
           Serial.println(F("Right"));
         }
+        // enable/disable the drive
         if (xbox.getButtonClick(START, i)) {
           drive.setEnable(!drive.isEnabled());
+          if (!drive.isEnabled()) {
+            xbox.setLedMode(ROTATING, 0);
+          } else {
+            xbox.setLedOn(LED1, 0);
+          }
         }
         if (xbox.getButtonClick(BACK, i)) {
           dome.setReversed(!dome.isReversed());
