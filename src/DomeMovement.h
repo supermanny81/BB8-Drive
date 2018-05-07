@@ -7,7 +7,7 @@
 #include "MovementUtils.h"
 #include "VarSpeedServo.h"
 
-#define DOME_TASK_INTERVAL 20 // in millis
+#define DOME_TASK_INTERVAL 10 // in millis
 
 //#define DEBUG_DOME_MOVEMENT
 
@@ -134,7 +134,7 @@ class DomeMovement {
     #ifdef DOME_SPIN_RAMP
       const uint8_t SPIN_RAMPING = DOME_SPIN_RAMP;
     #else
-      const uint8_t SPIN_RAMPING = 10;
+      const uint8_t SPIN_RAMPING = 15;
     #endif
     #ifdef DEBUG_DOME_MOVEMENT
       int count = 0;
@@ -142,7 +142,7 @@ class DomeMovement {
     #ifdef DOME_SERVO_RAMP
       const uint8_t XY_RAMPING = DOME_SERVO_RAMP;
     #else
-      const uint8_t XY_RAMPING = 7;
+      const uint8_t XY_RAMPING = 3;
     #endif
 
     /**
@@ -193,8 +193,9 @@ class DomeMovement {
     */
     void setDomePosition() {
       if (this->center == true) {
-        int16_t min_range = domeSpinCenterPos - 20;
-        int16_t max_range = domeSpinCenterPos + 20;
+        // margin of error is 15 degrees
+        int16_t min_range = targetDomePotPos - 20;
+        int16_t max_range = targetDomePotPos + 20;
         int16_t pot_pos = domeSpinPotPos;
         if (min_range < 0)
           min_range += 1024;
