@@ -7,6 +7,8 @@
 #include "MovementUtils.h"
 #include "VarSpeedServo.h"
 
+#define DOME_TASK_INTERVAL 20 // in millis
+
 //#define DEBUG_DOME_MOVEMENT
 
 class DomeMovement {
@@ -26,6 +28,7 @@ class DomeMovement {
       this->spinIn2 = spinIn2;
       this->domeSpinPot = domeSpinPot;
       this->domeSpinCenterPos = constrain(domeSpinCenterPos, 0, 1024);
+      this->targetDomePotPos = this->domeSpinCenterPos;
 
       // X,Y movement for dome, leftServo is your left when you face
       // the drive
@@ -48,10 +51,10 @@ class DomeMovement {
     */
     void task() {
       unsigned long currentMillis = millis();
-      if (currentMillis - previousMillis >= 10) {
+      if (currentMillis - previousMillis >= DOME_TASK_INTERVAL) {
         previousMillis = currentMillis;
         this->domeSpinPotPos = analogRead(this->domeSpinPot);
-        this->centerDome();
+        this->setDomePosition();
         this->spin();
         this->move();
       }
@@ -71,7 +74,7 @@ class DomeMovement {
 
     void setDomeXY(int16_t x, int16_t y) {
       //x = x-3; //offset, the servo's spline teeth aren't very high res
-      x = constrain(x, -50, 65); // can't hit the drive gear
+      x = constrain(x, -55, 75); // can't hit the drive gear
       y = constrain(y, -70, 70); //
 
       if (reversed) {
@@ -79,9 +82,9 @@ class DomeMovement {
         x = x * -1;
         y = y * -1;
       }
-      // mix in X
-      targetServo1 = constrain(map(y, -90, 90, 180, 0) + (x/2), 0, 180);
-      targetServo2 = constrain(map(y, -90, 90, 0, 180) + (x/2), 0, 180);
+
+      this->targetX = x;
+      this->targetY = y;
     }
 
     float getDomeSpinPosition() {
@@ -107,6 +110,7 @@ class DomeMovement {
       } else {
         domeSpinCenterPos += 512;
       }
+      this->targetDomePotPos = domeSpinCenterPos;
       if (targetRotationSpeed == 0)
         faceCenter();
     }
@@ -115,8 +119,8 @@ class DomeMovement {
     unsigned long previousMillis = 0; // used to determine if loop shoudl run
     VarSpeedServo leftServo;
     VarSpeedServo rightServo;
-    int16_t targetServo1 = 90, targetServo2 = 90;
-    int16_t currentServo1 = 90, currentServo2 = 90;
+    int16_t currentX = 0, currentY = 0;
+    int16_t targetX = 0, targetY = 0;
 
     // speed of motor rotation, -128..127, 0 is stop
     int16_t targetRotationSpeed = 0, currentRotationSpeed = 0;
@@ -124,11 +128,13 @@ class DomeMovement {
     uint8_t domeSpinPot;
     int16_t domeSpinPotPos;
     int16_t domeSpinCenterPos;
+    int16_t targetDomePotPos;
+
     bool center = false, reversed = true;
     #ifdef DOME_SPIN_RAMP
       const uint8_t SPIN_RAMPING = DOME_SPIN_RAMP;
     #else
-      const uint8_t SPIN_RAMPING = 5;
+      const uint8_t SPIN_RAMPING = 10;
     #endif
     #ifdef DEBUG_DOME_MOVEMENT
       int count = 0;
@@ -136,7 +142,7 @@ class DomeMovement {
     #ifdef DOME_SERVO_RAMP
       const uint8_t XY_RAMPING = DOME_SERVO_RAMP;
     #else
-      const uint8_t XY_RAMPING = 5;
+      const uint8_t XY_RAMPING = 7;
     #endif
 
     /**
@@ -167,17 +173,25 @@ class DomeMovement {
     }
 
     void move() {
-      // apply additional easing on servo travel
-      currentServo1 = MovementUtils::ease(currentServo1, targetServo1, XY_RAMPING);
-      currentServo2 = MovementUtils::ease(currentServo2, targetServo2, XY_RAMPING);
-      leftServo.write(currentServo1, 80, false);
-      rightServo.write(currentServo2, 80, false);
+      // apply additional easing on XY travel
+      this->currentX = MovementUtils::ease(this->currentX,
+                                           this->targetX,
+                                           XY_RAMPING);
+      this->currentY = MovementUtils::ease(this->currentY,
+                                           this->targetY,
+                                           XY_RAMPING);
+      // mix values into servo positions
+      int16_t leftPos = constrain(map(this->currentY, -90, 90, 180, 0) + (this->currentX/2), 0, 180);
+      int16_t rightPos = constrain(map(this->currentY, -90, 90, 0, 180) + (this->currentX/2), 0, 180);
+
+      leftServo.write(leftPos);
+      rightServo.write(rightPos);
     }
 
     /**
     * Moves the dome back to center position
     */
-    void centerDome() {
+    void setDomePosition() {
       if (this->center == true) {
         int16_t min_range = domeSpinCenterPos - 20;
         int16_t max_range = domeSpinCenterPos + 20;
