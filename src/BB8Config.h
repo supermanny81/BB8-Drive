@@ -15,7 +15,8 @@
 */
 #define DOME_RIGHT_SERVO_PIN 5
 #define DOME_LEFT_SERVO_PIN 4
-#define DOME_SERVO_RAMP 5
+#define DOME_SERVO_RAMP 3
+
 #define DOME_SPIN_PWM 3
 #define DOME_SPIN_IN1 53
 #define DOME_SPIN_IN2 49
