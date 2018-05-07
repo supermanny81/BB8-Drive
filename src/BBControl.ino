@@ -6,7 +6,7 @@
 #include <SPI.h>
 #include <XBOXRECV.h>
 
-#include "BB8Config.h"
+#include "BBConfig.h"
 #include "DomeMovement.h"
 #include "Drive.h"
 #include "IMU.h"
@@ -23,8 +23,14 @@ Voltage* voltage = Voltage::getInstance();
 
 int count = 0;
 
+/**
+* Prepares the drive using settings from BBConfig.h
+*/
 void setup() {
   Serial.begin(115200);
+  Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+  Log.notice(F("BB8 Drive Control Started...\n"));
+
   dome.setup(
     DOME_LEFT_SERVO_PIN,
     DOME_RIGHT_SERVO_PIN,
@@ -34,25 +40,19 @@ void setup() {
     DOME_SPIN_POT,
     DOME_SPIN_CENTER_POSITION
   );
+
   drive.setup(
     DRIVE_EN,
     MAIN_DRIVE_FWD,
     MAIN_DRIVE_REV
   );
+  
+  sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
 
   if (usb.Init() == -1) {
     Serial.print(F("\r\nOSC did not start"));
     while (1); //halt
   }
-
-  // setup sound
-  Serial3.begin(9600);
-  sfx.setup(SFX_SERIAL, SFX_RST);
-
-  // Initialize with log level and log output.
-  Log.begin(LOG_LEVEL_VERBOSE, &Serial);
-  Log.notice(F("BB8 Drive Control Started...\n"));
-
 }
 
 void loop() {

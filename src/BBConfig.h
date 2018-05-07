@@ -32,4 +32,14 @@
 #define MAIN_DRIVE_REV 12
 
 
+/**
+* Sound FX
+**/
+#define SFX_RST 37
+#define SFX_SERIAL &Serial3
+#define SFX_BAUD_RATE 9600
+#define SFX_ACT_PIN 34
+#define SFX_FADE_PIN A2
+
+
 #endif //BB8_CONFIG_H_
