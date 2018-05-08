@@ -2,6 +2,7 @@
 #define IMU_H_
 
 #include <Arduino.h>
+#include <ArduinoLog.h>
 #include "EasyTransfer.h"
 
 // default settings, call setup to change these
@@ -38,11 +39,13 @@ class IMU {
     * Recieves the data from the IMU
     */
     void task(){
-      if(s->available() > 0){
-        imuReciever.receiveData();
-        lastReceivedMillis = millis();
+      if(millis() - lastReceivedMillis >= 10){
+        if(s->available() > 0){
+          imuReciever.receiveData();
+          lastReceivedMillis = millis();
+        }
+        IMUtimeout();
       }
-      IMUtimeout();
     }
 
   private:
@@ -53,6 +56,8 @@ class IMU {
     void IMUtimeout() {
       if(millis() - lastReceivedMillis >= 500){
         status = 1;
+        Log.fatal(F("IMU::IMUTimeout - No data recieved in %s millis."),
+          millis() - lastReceivedMillis);
       }else{
         if(status != 0){
           status = 0;
