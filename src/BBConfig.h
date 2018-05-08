@@ -35,11 +35,14 @@
 /**
 * Sound FX
 **/
+// sound board configuration
 #define SFX_RST 37
 #define SFX_SERIAL &Serial3
 #define SFX_BAUD_RATE 9600
-#define SFX_ACT_PIN 34
+#define SFX_ACT_PIN 35
 #define SFX_FADE_PIN A2
+// music files
+#define SFX_YEP "YEPOGG"
 
 
 #endif //BB8_CONFIG_H_

@@ -13,6 +13,8 @@
 #include "SoundFX.h"
 #include "Voltage.h"
 
+//#define DEBUG_CONTROL
+
 DomeMovement dome = DomeMovement();
 Drive drive = Drive();
 IMU imu = IMU();
@@ -46,7 +48,7 @@ void setup() {
     MAIN_DRIVE_FWD,
     MAIN_DRIVE_REV
   );
-  
+
   sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
 
   if (usb.Init() == -1) {
@@ -61,6 +63,7 @@ void loop() {
   imu.task();
   dome.task();
   drive.task();
+  sfx.task();
 
   if (xbox.XboxReceiverConnected) {
     for (uint8_t i = 0; i < 4; i++) {
@@ -170,10 +173,42 @@ void loop() {
           // turn off controller
           xbox.disconnect(i);
         }
+        // XYAB
+        if (xbox.getButtonClick(X)) {
+          if (xbox.getButtonPress(R1)) {
+              sfx.playTrack(4, 0, 9, true);
+          } else if (xbox.getButtonPress(L1)) {
+            sfx.playTrack(0, 0, 9, true);
+          } else {
+            sfx.playFile(SFX_YEP);
+          }
+        }
+        if (xbox.getButtonClick(Y)) {
+          if (xbox.getButtonPress(R1)) {
+            sfx.playTrack(5, 1, false);
+          } else {
+            sfx.playTrack(1, 0, 9, true);
+          }
+        }
+        if (xbox.getButtonClick(A)) {
+          if (xbox.getButtonPress(R1)) {
+            sfx.playTrack(5, 4, false);
+          } else {
+            sfx.playTrack(2, 0, 9, true);
+          }
+        }
+        if (xbox.getButtonClick(B)) {
+          if (xbox.getButtonPress(R1)) {
+            sfx.playTrack(5, 0, false);
+          } else {
+            sfx.playTrack(3, 0, 9, true);
+          }
+        }
       }
     }
   }
 
+  #ifdef DEBUG_CONTROL
   if (count == 500) {
     Log.notice(F("Control::IMU - Pitch: %F, Roll: %F\n"),
       imu.data.pitch, imu.data.roll);
@@ -184,4 +219,5 @@ void loop() {
     count = 0;
   }
   count++;
+  #endif
 }
