@@ -133,14 +133,12 @@ void loop() {
           dome.setDomeXY(0, 0);
           drive.setSpeed(0);
         }
-
+        // Volume UP|DOWN
         if (xbox.getButtonClick(UP, i)) {
-          xbox.setLedOn(LED1, i);
-          Serial.println(F("Up"));
+          sfx.volUp();
         }
         if (xbox.getButtonClick(DOWN, i)) {
-          xbox.setLedOn(LED4, i);
-          Serial.println(F("Down"));
+          sfx.volDown();
         }
         if (xbox.getButtonClick(LEFT, i)) {
           xbox.setLedOn(LED3, i);
