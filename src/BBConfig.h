@@ -30,7 +30,7 @@
 #define DRIVE_EN 29
 #define MAIN_DRIVE_FWD 13
 #define MAIN_DRIVE_REV 12
-
+#define S2S_LEAN_POT A0
 
 /**
 * Sound FX
@@ -41,8 +41,5 @@
 #define SFX_BAUD_RATE 9600
 #define SFX_ACT_PIN 35
 #define SFX_FADE_PIN A2
-// music files
-#define SFX_YEP "YEPOGG"
-
 
 #endif //BB8_CONFIG_H_

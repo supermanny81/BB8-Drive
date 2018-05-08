@@ -180,7 +180,7 @@ void loop() {
           } else if (xbox.getButtonPress(L1)) {
             sfx.playTrack(0, 0, 9, true);
           } else {
-            sfx.playFile(SFX_YEP);
+            sfx.playTrack(6, 0, true);
           }
         }
         if (xbox.getButtonClick(Y)) {
