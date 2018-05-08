@@ -50,9 +50,6 @@ class SoundFX {
       if (currentMillis - this->previousMillis >= _SFX_TASK_INTERVAL) {
         this->previousMillis = currentMillis;
         this->psiActivity();
-        if(psi_enabled) {
-          Serial.print(this->psi_level);Serial.print(",");
-        }
       }
       #ifdef DEBUG_SFX
         if (count == 500) {
