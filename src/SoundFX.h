@@ -6,7 +6,7 @@
 #include "ArduinoLog.h"
 #include "Stream.h"
 
-#define DEBUG_SFX
+//#define DEBUG_SFX
 
 // default settings, call setup to change these
 #define _SFX_RST 37
