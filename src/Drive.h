@@ -125,11 +125,9 @@ class Drive {
     boolean reversed = true, enabled = false;
     int16_t targetSpeed = 0, currentSpeed = 0;
     int16_t targetSpin = 0, currentSpin = 0;
-    uint16_t s2s_pot = 512;
+    int16_t s2s_pot = 0;
     //PID settings for the S2S tilt (S2S - Servo)
-    double pk_S2S = 12.0;
-    double ik_S2S = 0.00;
-    double dk_S2S = 0.00;
+    double pk_S2S = 12.0, ik_S2S = 0.00, dk_S2S = 0.00;
     double setPoint_S2S = 0, input_S2S = 0, output_S2S = 0;
     PID s2sServo = PID(&input_S2S, &output_S2S, &setPoint_S2S,
       pk_S2S, ik_S2S , dk_S2S, DIRECT);
