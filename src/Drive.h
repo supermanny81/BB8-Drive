@@ -10,7 +10,7 @@
 
 //#define DEBUG_DRIVE_MOVEMENT
 
-#define _DRIVE_TASK_INTERVAL 20
+#define _DRIVE_TASK_INTERVAL 10
 
 // FWD/REV en 31
 // FWD PIN  13
@@ -44,6 +44,7 @@ class Drive {
       pinMode(RIGHTPin, OUTPUT);
       this->s2sServo.SetMode(AUTOMATIC);
       this->s2sServo.SetOutputLimits(-255, 255);
+      this->s2sServo.SetSampleTime(20);
     }
 
     void setSpeed(int16_t speed) {
@@ -126,9 +127,9 @@ class Drive {
     int16_t targetSpin = 0, currentSpin = 0;
     uint16_t s2s_pot = 512;
     //PID settings for the S2S tilt (S2S - Servo)
-    double pk_S2S = 12;
-    double ik_S2S = 0;
-    double dk_S2S = .05;
+    double pk_S2S = 12.0;
+    double ik_S2S = 0.00;
+    double dk_S2S = 0.00;
     double setPoint_S2S = 0, input_S2S = 0, output_S2S = 0;
     PID s2sServo = PID(&input_S2S, &output_S2S, &setPoint_S2S,
       pk_S2S, ik_S2S , dk_S2S, DIRECT);
@@ -171,10 +172,10 @@ class Drive {
 
     void tilt() {
       //  smooth our potentiometer readings
-      s2s_pot = analogRead(this->LEAN_POT);
+      s2s_pot = SmoothingUtils::smooth(analogRead(this->LEAN_POT), 0.45, s2s_pot);
       // TODO: Replace S2S_LEAN_MIN|MAX macros
       input_S2S = floor(SmoothingUtils::smooth(map(s2s_pot,
-          S2S_LEAN_MIN, S2S_LEAN_MAX, -90, 90), .9, input_S2S));
+          S2S_LEAN_MIN, S2S_LEAN_MAX, -90, 90), 0.9, input_S2S));
       s2sServo.Compute();
 
       // send to motor controller
