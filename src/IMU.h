@@ -9,7 +9,7 @@
 #define _IMU_SERIAL &Serial2
 #define _IMU_BAUD 115200
 
-#define DEBUG_IMU
+//#define DEBUG_IMU
 
 class IMU {
   public:
