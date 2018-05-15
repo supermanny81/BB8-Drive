@@ -21,7 +21,8 @@
 #define MAIN_DRIVE_FWD 13
 #define MAIN_DRIVE_REV 12
 #define S2S_LEAN_POT A0
-#define S2S_LEAN_OFFSET -38 // Add to equal 512
+#define S2S_LEAN_MIN 380 // Add to equal Max POT reading leaning to the right
+#define S2S_LEAN_MAX 600 // Max POT reading leaning to the right
 #define S2S_ENABLE_DRV 33 // enable pin for S2S
 #define S2S_LEFT_DRV 6 //FWD pin on motor controller
 #define S2S_RIGHT_DRV 7 //REV pin on motor controller

@@ -172,7 +172,9 @@ class Drive {
     void tilt() {
       //  smooth our potentiometer readings
       s2s_pot = analogRead(this->LEAN_POT);
-      input_S2S = floor(SmoothingUtils::smooth(map(s2s_pot, 380, 600, -90, 90), .9, input_S2S));
+      // TODO: Replace S2S_LEAN_MIN|MAX macros
+      input_S2S = floor(SmoothingUtils::smooth(map(s2s_pot,
+          S2S_LEAN_MIN, S2S_LEAN_MAX, -90, 90), .9, input_S2S));
       s2sServo.Compute();
 
       // send to motor controller
