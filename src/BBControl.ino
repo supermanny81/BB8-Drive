@@ -46,7 +46,10 @@ void setup() {
   drive.setup(
     DRIVE_EN,
     MAIN_DRIVE_FWD,
-    MAIN_DRIVE_REV
+    MAIN_DRIVE_REV,
+    S2S_ENABLE_DRV,
+    S2S_LEFT_DRV,
+    S2S_RIGHT_DRV
   );
 
   sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
@@ -66,7 +69,8 @@ void loop() {
   sfx.task();
 
   if (xbox.XboxReceiverConnected) {
-    for (uint8_t i = 0; i < 4; i++) {
+      int i = 0;
+
       if (xbox.Xbox360Connected[i]) {
         // DOME SPIN
         if (xbox.getButtonPress(L2, i) || xbox.getButtonPress(R2, i)) {
@@ -113,10 +117,18 @@ void loop() {
             }
           }
           if (xbox.getAnalogHat(RightHatX, i) > 7500 || xbox.getAnalogHat(RightHatX, i) < -7500) {
+            // Tilt L/R
             rx = xbox.getAnalogHat(RightHatX, i);
-            Serial.print(rx);
+            if (rx < -7500) {
+              rx = map(rx, -32768, -7500, -90, 0);
+            } else if (rx >= 7500) {
+              rx = map(rx, 7500, 32767, 0, 90);
+            } else {
+              rx = 0;
+            }
           }
           if (xbox.getAnalogHat(RightHatY, i) > 7500 || xbox.getAnalogHat(RightHatY, i) < -7500) {
+            // Drive FWD/REV
             ry = xbox.getAnalogHat(RightHatY, i);
             // map Y account for the deadzone
             if (ry < -7500) {
@@ -129,9 +141,11 @@ void loop() {
           }
           dome.setDomeXY(lx, ly);
           drive.setSpeed(ry);
+          drive.setTilt(rx);
         } else {
           dome.setDomeXY(0, 0);
           drive.setSpeed(0);
+          drive.setTilt(0);
         }
         // Volume UP|DOWN
         if (xbox.getButtonClick(UP, i)) {
@@ -142,11 +156,9 @@ void loop() {
         }
         if (xbox.getButtonClick(LEFT, i)) {
           xbox.setLedOn(LED3, i);
-          Serial.println(F("Left"));
         }
         if (xbox.getButtonClick(RIGHT, i)) {
           xbox.setLedOn(LED2, i);
-          Serial.println(F("Right"));
         }
         // enable/disable the drive
         if (xbox.getButtonClick(START, i)) {
@@ -159,6 +171,7 @@ void loop() {
         }
         if (xbox.getButtonClick(BACK, i)) {
           dome.setReversed(!dome.isReversed());
+          drive.setReversed(!drive.isReversed());
         }
         if (xbox.getButtonClick(L3, i)) {
           // move dome to face forward
@@ -203,7 +216,6 @@ void loop() {
           }
         }
       }
-    }
   }
 
   #ifdef DEBUG_CONTROL
