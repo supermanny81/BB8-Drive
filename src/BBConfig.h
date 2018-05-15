@@ -26,6 +26,9 @@
 #define S2S_ENABLE_DRV 33 // enable pin for S2S
 #define S2S_LEFT_DRV 6 //FWD pin on motor controller
 #define S2S_RIGHT_DRV 7 //REV pin on motor controller
+#define FLYWHEEL_EN_DRV 29 // tied to main drive, but could easily be it's own
+#define FLYWHEEL_LEFT_DRV 23
+#define FLYWHEEL_RIGHT_DRV 25
 
 /**
 * Sound FX
