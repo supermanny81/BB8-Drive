@@ -22,18 +22,6 @@ class Voltage {
     Voltage(Voltage const&); // copy disabled
     void operator=(Voltage const&); // assigment disabled
 
-    float smooth(float data, float filterVal, float smoothedVal){
-      if (filterVal > 1){      // check to make sure param's are within range
-        filterVal = .99;
-      }
-      else if (filterVal <= 0){
-        filterVal = 0;
-      }
-      smoothedVal = (data * (1 - filterVal)) + (smoothedVal  *  filterVal);
-      return (float)smoothedVal;
-    }
-
-
   public:
     static Voltage* getInstance() {
       static Voltage voltage;
@@ -47,7 +35,8 @@ class Voltage {
     }
 
     void sample() {
-      volts = smooth((analogRead(_pin) / 1024.) * 25, .9, volts);
+      volts = SmoothingUtils::smooth((analogRead(_pin) / 1024.) * 25,
+        .1, volts);
       percent = map(constrain(volts, _minVoltage, _maxVoltage),
                     _minVoltage, _maxVoltage, 0, 100);
     }
