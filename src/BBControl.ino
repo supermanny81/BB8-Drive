@@ -49,7 +49,10 @@ void setup() {
     MAIN_DRIVE_REV,
     S2S_ENABLE_DRV,
     S2S_LEFT_DRV,
-    S2S_RIGHT_DRV
+    S2S_RIGHT_DRV,
+    FLYWHEEL_EN_DRV,
+    FLYWHEEL_LEFT_DRV,
+    FLYWHEEL_RIGHT_DRV
   );
 
   sfx.setup(SFX_SERIAL, SFX_RST, SFX_BAUD_RATE);
@@ -72,17 +75,26 @@ void loop() {
       int i = 0;
 
       if (xbox.Xbox360Connected[i]) {
-        // DOME SPIN
+        // DOME|BALL SPIN
         if (xbox.getButtonPress(L2, i) || xbox.getButtonPress(R2, i)) {
             int16_t l2 = xbox.getButtonPress(L2, i);
             int16_t r2 = xbox.getButtonPress(R2, i);
-            if (l2 > r2) {
-              dome.setDomeSpin(l2*-1);
+            if (xbox.getButtonPress(L1) || xbox.getButtonPress(R1)) {
+              if (l2 > r2) {
+                drive.setSpin(l2*-1);
+              } else {
+                drive.setSpin(r2);
+              }
             } else {
-              dome.setDomeSpin(r2);
+              if (l2 > r2) {
+                dome.setDomeSpin(l2*-1);
+              } else {
+                dome.setDomeSpin(r2);
+              }
             }
         } else {
           dome.setDomeSpin(0);
+          drive.setSpin(0);
         }
         // DOME XY and DRIVE
         if (xbox.getAnalogHat(LeftHatX, i) > 7500 ||

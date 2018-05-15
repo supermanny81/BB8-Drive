@@ -21,27 +21,42 @@ class Drive {
     ~Drive() {;}
 
     void setup(uint8_t enablePin, uint8_t FWDPin, uint8_t REVPin,
-        uint8_t tiltEnablePin, uint8_t LEFTPin, uint8_t RIGHTPin) {
+        uint8_t tiltEnablePin, uint8_t LEFTPin, uint8_t RIGHTPin,
+        uint8_t spinEnablePin, uint8_t spinLeftPin, uint8_t spinRightPin) {
+      // drive
       this->enablePin = enablePin;
       this->FWDPin = FWDPin;
       this->REVPin = REVPin;
+      // lean
       this->tiltEnablePin = tiltEnablePin;
       this->RIGHTPin = RIGHTPin;
       this->LEFTPin = LEFTPin;
+      // spin
+      this->spinEnablePin = spinEnablePin;
+      this->spinLeftPin = spinLeftPin;
+      this->spinRightPin = spinRightPin;
       // drive configure pins
-      digitalWrite(enablePin, 0);
-      pinMode(enablePin, OUTPUT);
-      digitalWrite(FWDPin, 0);
-      pinMode(FWDPin, OUTPUT);
-      digitalWrite(REVPin, 0);
-      pinMode(REVPin, OUTPUT);
+      digitalWrite(this->enablePin, 0);
+      pinMode(this->enablePin, OUTPUT);
+      digitalWrite(this->FWDPin, 0);
+      pinMode(this->FWDPin, OUTPUT);
+      digitalWrite(this->REVPin, 0);
+      pinMode(this->REVPin, OUTPUT);
       // s2s configure PINs
-      digitalWrite(tiltEnablePin, 0);
-      pinMode(tiltEnablePin, OUTPUT);
-      digitalWrite(LEFTPin, 0);
-      pinMode(LEFTPin, OUTPUT);
-      digitalWrite(RIGHTPin, 0);
-      pinMode(RIGHTPin, OUTPUT);
+      digitalWrite(this->tiltEnablePin, 0);
+      pinMode(this->tiltEnablePin, OUTPUT);
+      digitalWrite(this->LEFTPin, 0);
+      pinMode(this->LEFTPin, OUTPUT);
+      digitalWrite(this->RIGHTPin, 0);
+      pinMode(this->RIGHTPin, OUTPUT);
+      // Flywheel PINs
+      digitalWrite(this->spinEnablePin, 0);
+      pinMode(this->spinEnablePin, OUTPUT);
+      digitalWrite(this->spinLeftPin, 0);
+      pinMode(this->spinLeftPin, OUTPUT);
+      digitalWrite(this->spinRightPin, 0);
+      pinMode(this->spinRightPin, OUTPUT);
+      // S2S servo setup
       this->s2sServo.SetMode(AUTOMATIC);
       this->s2sServo.SetOutputLimits(-255, 255);
       this->s2sServo.SetSampleTime(20);
@@ -76,6 +91,7 @@ class Drive {
       unsigned long currentMillis = millis();
       if (currentMillis - previousMillis >= _DRIVE_TASK_INTERVAL) {
         move();
+        spin();
         tilt();
       }
       #ifdef DEBUG_DRIVE_MOVEMENT
@@ -107,7 +123,7 @@ class Drive {
       this->enabled = enabled;
     }
 
-    void spin(int16_t speed) {
+    void setSpin(int16_t speed) {
       if (enabled) {
         speed = constrain(speed, -255, 255);
         targetSpin = SmoothingUtils::smooth(speed, .9, targetSpin);
@@ -121,13 +137,14 @@ class Drive {
   private:
     unsigned long previousMillis = 0; // used to determine if loop shoudl run
     uint8_t enablePin = 0, FWDPin = 0, REVPin = 0, tiltEnablePin = 0,
-      LEFTPin = 0, RIGHTPin = 0;
+      LEFTPin = 0, RIGHTPin = 0, spinEnablePin = 0, spinLeftPin = 0,
+      spinRightPin =0;
     boolean reversed = true, enabled = false;
     int16_t targetSpeed = 0, currentSpeed = 0;
     int16_t targetSpin = 0, currentSpin = 0;
     int16_t s2s_pot = 0;
     //PID settings for the S2S tilt (S2S - Servo)
-    double pk_S2S = 12.0, ik_S2S = 0.00, dk_S2S = 0.00;
+    double pk_S2S = 10.0, ik_S2S = 0.00, dk_S2S = 0.00;
     double setPoint_S2S = 0, input_S2S = 0, output_S2S = 0;
     PID s2sServo = PID(&input_S2S, &output_S2S, &setPoint_S2S,
       pk_S2S, ik_S2S , dk_S2S, DIRECT);
@@ -166,6 +183,25 @@ class Drive {
         digitalWrite(enablePin, HIGH);
       else
         digitalWrite(enablePin, LOW);
+    }
+
+    void spin() {
+      currentSpin = MovementUtils::ease(currentSpin,
+        targetSpin, DRIVE_RAMPING);
+      if (currentSpin > 0){
+        analogWrite(spinLeftPin, abs(currentSpin));
+        analogWrite(spinRightPin, 0);
+      } else if (currentSpin < 0) {
+        analogWrite(spinLeftPin, 0);
+        analogWrite(spinRightPin, abs(currentSpin));
+      } else {
+        analogWrite(spinLeftPin, 0);
+        analogWrite(spinRightPin, 0);
+      }
+      if (this->enabled)
+        digitalWrite(spinEnablePin, HIGH);
+      else
+        digitalWrite(spinEnablePin, LOW);
     }
 
     void tilt() {
