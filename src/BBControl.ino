@@ -1,8 +1,5 @@
 #include <Arduino.h>
 #include <ArduinoLog.h>
-#include <EasyTransfer.h>
-#include <EEPROMex.h>
-#include <PID_v1.h>
 #include <SPI.h>
 #include <XBOXRECV.h>
 
@@ -85,12 +82,14 @@ void loop() {
               } else {
                 drive.setSpin(r2);
               }
+              dome.setDomeSpin(0);
             } else {
               if (l2 > r2) {
                 dome.setDomeSpin(l2*-1);
               } else {
                 dome.setDomeSpin(r2);
               }
+              drive.setSpin(0);
             }
         } else {
           dome.setDomeSpin(0);
@@ -144,9 +143,9 @@ void loop() {
             ry = xbox.getAnalogHat(RightHatY, i);
             // map Y account for the deadzone
             if (ry < -7500) {
-              ry=map(ry, -32768, -7500, -255, 0);
+              ry = map(ry, -32768, -7500, -255, 0);
             } else if (ry >= 7500) {
-              ry=map(ry, 7500, 32767, 0, 255);
+              ry = map(ry, 7500, 32767, 0, 255);
             } else {
               ry = 0;
             }
@@ -189,14 +188,11 @@ void loop() {
           // move dome to face forward
           dome.faceCenter();
         }
-        if (xbox.getButtonClick(R3, i)) {
-          Serial.println(F("R3"));
-        }
         if (xbox.getButtonClick(SYNC, i)) {
           // turn off controller
           xbox.disconnect(i);
         }
-        // XYAB
+        // XYAB - SOUNDS
         if (xbox.getButtonClick(X)) {
           if (xbox.getButtonPress(R1)) {
               sfx.playTrack(4, 0, 9, true);
