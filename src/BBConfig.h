@@ -34,14 +34,14 @@
 #define MAIN_DRIVE_FWD 13
 #define MAIN_DRIVE_REV 12
 #define S2S_LEAN_POT A0
-#define S2S_LEAN_MIN 360 // Add to equal Max POT reading leaning to the right
-#define S2S_LEAN_MAX 580 // Max POT reading leaning to the right
+#define S2S_LEAN_MIN 365 // Add to equal Max POT reading leaning to the right
+#define S2S_LEAN_MAX 570 // Max POT reading leaning to the right
 #define S2S_ENABLE_DRV 33 // enable pin for S2S
 #define S2S_LEFT_DRV 6 //FWD pin on motor controller
 #define S2S_RIGHT_DRV 7 //REV pin on motor controller
 #define FLYWHEEL_EN_DRV 29 // tied to main drive, but could easily be it's own
-#define FLYWHEEL_LEFT_DRV 23
-#define FLYWHEEL_RIGHT_DRV 25
+#define FLYWHEEL_LEFT_DRV 8
+#define FLYWHEEL_RIGHT_DRV 11
 
 /**
 * Sound FX
