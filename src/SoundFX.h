@@ -1,7 +1,6 @@
 #ifndef SFX_H_
 #define SFX_H_
 
-#include "Adafruit_Soundboard.h"
 #include "Arduino.h"
 #include "ArduinoLog.h"
 #include "Stream.h"
