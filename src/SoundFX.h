@@ -76,7 +76,8 @@ class SoundFX {
           // much faster than using serial communication
           while(this->isSoundActive()) {
             if ((millis() - current) > 100) {
-              Log.warning(F("SoundFX::playFile - Pin active too long.\n"));
+              Log.warning(F("SoundFX::playFile - Failed to stop audio track, "
+                "pin high.\n"));
               break;
             }
           }
