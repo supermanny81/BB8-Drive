@@ -74,8 +74,8 @@ class DomeMovement {
 
     void setDomeXY(int16_t x, int16_t y) {
       //x = x-3; //offset, the servo's spline teeth aren't very high res
-      x = constrain(x, -55, 75); // can't hit the drive gear
-      y = constrain(y, -70, 70); //
+      x = constrain(x, this->X_MIN, this->X_MAX); // can't hit the drive gear
+      y = constrain(y, this->Y_MIN, this->Y_MAX); //
 
       if (reversed) {
         // invert the controls
@@ -144,6 +144,27 @@ class DomeMovement {
     #else
       const uint8_t XY_RAMPING = 3;
     #endif
+    #ifdef DOME_TILT_X_MIN
+      int16_t X_MIN = DOME_TILT_X_MIN;
+    #else
+      int16_t X_MIN = -50;
+    #endif
+    #ifdef DOME_TILT_X_MAX
+      int16_t X_MAX = DOME_TILT_X_MAX;
+    #else
+      int16_t X_MAX = 50;
+    #endif
+    #ifdef DOME_TILT_Y_MIN
+      int16_t Y_MIN = DOME_TILT_Y_MIN;
+    #else
+      int16_t Y_MIN = -50;
+    #endif
+    #ifdef DOME_TILT_Y_MAX
+      int16_t Y_MAX = DOME_TILT_Y_MAX;
+    #else
+      int16_t Y_MAX = 50;
+    #endif
+
 
     /**
     * Determines direction and speed (with ramping) of the dome

@@ -12,13 +12,16 @@
 *  here and importantly will not overriden the next time you update the code.
 */
 
-
 /**
 * Dome position and spin settings
 */
 #define DOME_RIGHT_SERVO_PIN 5
 #define DOME_LEFT_SERVO_PIN 4
 #define DOME_SERVO_RAMP 3
+#define DOME_TILT_X_MIN -58
+#define DOME_TILT_X_MAX 75
+#define DOME_TILT_Y_MIN -70
+#define DOME_TILT_Y_MAX 70
 
 #define DOME_SPIN_PWM 3
 #define DOME_SPIN_IN1 53
