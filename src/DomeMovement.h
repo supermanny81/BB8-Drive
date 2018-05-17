@@ -60,8 +60,8 @@ class DomeMovement {
       }
       #ifdef DEBUG_DOME_MOVEMENT
         if (count == 500) {
-          Log.notice(F("Dome::XY - Left: [T] %d [A] %d, Right: [T] %d [A] %d\n"),
-            targetServo1, currentServo1, targetServo2, currentServo2);
+          Log.notice(F("Dome::XY - X: [T] %d [A] %d, Y: [T] %d [A] %d\n"),
+            targetX, currentX, targetY, currentY);
           Log.notice(F("Dome::Spin - Pos: %F, Speed: %d, Center: %t\n"),
             this->getDomeSpinPosition(), this->targetRotationSpeed,
             this->center);
