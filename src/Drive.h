@@ -61,10 +61,9 @@ class Drive {
 
     void setSpeed(int16_t speed) {
       if (enabled) {
-        speed = constrain(speed, -255, 255);
+        targetSpeed = constrain(speed, -255, 255);
         if (!reversed)
-          speed *= -1;
-        targetSpeed = SmoothingUtils::smooth(speed, .9, targetSpeed);
+          targetSpeed *= -1;
       } else {
         targetSpeed = 0;
       }
@@ -72,10 +71,9 @@ class Drive {
 
     void setTilt(int16_t x) {
       if (enabled) {
-        x = constrain(x, -90, 90);
+        setPoint_S2S = constrain(x, -90, 90);
         if (!reversed)
-          x *= -1;
-        setPoint_S2S = SmoothingUtils::smooth(x, .9, setPoint_S2S);
+          setPoint_S2S *= -1;
       } else {
         setPoint_S2S = 0;
       }
@@ -128,8 +126,7 @@ class Drive {
 
     void setSpin(int16_t speed) {
       if (enabled) {
-        speed = constrain(speed, -255, 255);
-        targetSpin = SmoothingUtils::smooth(speed, .9, targetSpin);
+        targetSpin = constrain(speed, -255, 255);
         if (!reversed)
           targetSpin *= -1;
       } else {
@@ -147,7 +144,7 @@ class Drive {
     int16_t targetSpin = 0, currentSpin = 0;
     int16_t s2s_pot = 0;
     //PID settings for the S2S tilt (S2S - Servo)
-    double pk_S2S = 10.0, ik_S2S = 0.00, dk_S2S = 0.00;
+    double pk_S2S = 15.0, ik_S2S = 0.00, dk_S2S = 0.00;
     double setPoint_S2S = 0, input_S2S = 0, output_S2S = 0;
     PID s2sServo = PID(&input_S2S, &output_S2S, &setPoint_S2S,
       pk_S2S, ik_S2S , dk_S2S, DIRECT);
