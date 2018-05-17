@@ -162,6 +162,16 @@ class Drive {
     #else
       const uint8_t LEAN_POT = A0;
     #endif
+    #ifdef S2S_LEAN_MIN
+      uint16_t S2S_POT_MIN = S2S_LEAN_MIN;
+    #else
+      uint16_t S2S_POT_MIN = 500;
+    #endif
+    #ifdef S2S_LEAN_MAX
+      uint16_t S2S_POT_MAX = S2S_LEAN_MAX;
+    #else
+      uint16_t S2S_POT_MAX = 500;
+    #endif
 
     /**
     * Drives the BB unit FWD and Reverse
@@ -209,7 +219,7 @@ class Drive {
       s2s_pot = SmoothingUtils::smooth(analogRead(this->LEAN_POT), 0.45, s2s_pot);
       // TODO: Replace S2S_LEAN_MIN|MAX macros
       input_S2S = floor(SmoothingUtils::smooth(map(s2s_pot,
-          S2S_LEAN_MIN, S2S_LEAN_MAX, -90, 90), 0.9, input_S2S));
+          S2S_POT_MIN, S2S_POT_MAX, -90, 90), 0.9, input_S2S));
       s2sServo.Compute();
 
       // send to motor controller
