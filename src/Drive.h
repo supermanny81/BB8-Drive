@@ -12,9 +12,6 @@
 
 #define _DRIVE_TASK_INTERVAL 10
 
-// FWD/REV en 31
-// FWD PIN  13
-// REV PIN 12
 class Drive {
   public:
     Drive() {}
@@ -96,10 +93,12 @@ class Drive {
       }
       #ifdef DEBUG_DRIVE_MOVEMENT
         if (count == 500) {
-          Log.notice(F("Drive::task - F/R En: %T, [T] %d, [A] %d - S2S [A] %d\n"),
-            this->enabled, this->targetSpeed, this->currentSpeed, this->s2s_pot);
-          Log.notice(F("Drive::task - Set Point: %D, Input: %D, Output: %D\n"),
-            this->setPoint_S2S, this->input_S2S, this->output_S2S);
+          Log.notice(F("Drive::task - FWD/REV (En: %T, T: %d, A: %d) "
+              "S2S (P: %d, S: %D, I: %D, O: %D) "
+              "SPIN (T: %d, A: %d)\n"),
+            this->enabled, this->targetSpeed, this->currentSpeed, this->s2s_pot,
+            this->setPoint_S2S, this->input_S2S, this->output_S2S,
+            this->targetSpin, this->currentSpin);
           count = 0;
         } else {
           count++;
@@ -107,6 +106,10 @@ class Drive {
       #endif
     }
 
+    /**
+    * Returns the drive's perspective on wether or not the BB8 front position
+    * has been reveresd.
+    */
     bool isReversed() {
       return this->reversed;
     }
