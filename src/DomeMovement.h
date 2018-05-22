@@ -164,6 +164,12 @@ class DomeMovement {
     #else
       int16_t Y_MAX = 50;
     #endif
+    #ifdef DOME_SERVO_SPEED
+      int16_t DS_SPEED = DOME_SERVO_SPEED;
+    #else
+      int16_t DS_SPEED = 120;
+    #endif
+
 
 
     /**
@@ -205,8 +211,8 @@ class DomeMovement {
       int16_t leftPos = constrain(map(this->currentY, -90, 90, 180, 0) + (this->currentX/2), 0, 180);
       int16_t rightPos = constrain(map(this->currentY, -90, 90, 0, 180) + (this->currentX/2), 0, 180);
 
-      leftServo.write(leftPos);
-      rightServo.write(rightPos);
+      leftServo.write(leftPos, 180);
+      rightServo.write(rightPos, 180);
     }
 
     /**

@@ -18,6 +18,7 @@
 #define DOME_RIGHT_SERVO_PIN 5
 #define DOME_LEFT_SERVO_PIN 4
 #define DOME_SERVO_RAMP 3
+#define DOME_SERVO_SPEED 180 // 0-255, fastest to slowest
 #define DOME_TILT_X_MIN -58 // avoid hitting the drive gear
 #define DOME_TILT_X_MAX 75
 #define DOME_TILT_Y_MIN -70
@@ -37,8 +38,8 @@
 #define MAIN_DRIVE_FWD 13
 #define MAIN_DRIVE_REV 12
 #define S2S_LEAN_POT A0
-#define S2S_LEAN_MIN 365 // Add to equal Max POT reading leaning to the right
-#define S2S_LEAN_MAX 570 // Max POT reading leaning to the right
+#define S2S_LEAN_MIN 375 // Add to equal Max POT reading leaning to the right
+#define S2S_LEAN_MAX 560 // Max POT reading leaning to the right
 #define S2S_ENABLE_DRV 33 // enable pin for S2S
 #define S2S_LEFT_DRV 6 //FWD pin on motor controller
 #define S2S_RIGHT_DRV 7 //REV pin on motor controller
