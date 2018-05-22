@@ -181,7 +181,9 @@ class SoundFX {
       pinMode(this->sfx_reset_pin, OUTPUT);
       delay(10);
       pinMode(this->sfx_reset_pin, INPUT);
-      delay(1000); // give a bit of time to 'boot up'
+      // commenting out for now, Adafruit gives this as an example, but I do
+      // not think we need it.
+      // delay(1000); // give a bit of time to 'boot up'
     }
 };
 
