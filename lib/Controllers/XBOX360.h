@@ -30,7 +30,7 @@ class XBOX360: public Controller {
     }
 
     uint8_t getBatteryLevel() override {
-      return xbox.getBatteryLevel(0);
+      return xbox.getBatteryLevel();
     }
 
   private:
@@ -195,6 +195,7 @@ class XBOX360: public Controller {
       } else {
         this->isEnabled(false);
         this->firstConnect = true;
+        Log.warning("Waiting for controller.\n");
       }
     }
 
