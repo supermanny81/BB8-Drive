@@ -36,6 +36,7 @@ void setup() {
   );
 
   droid.drive.setup(
+    &droid.imu,
     DRIVE_EN,
     MAIN_DRIVE_FWD,
     MAIN_DRIVE_REV,
