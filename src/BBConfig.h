@@ -17,8 +17,8 @@
 */
 #define DOME_RIGHT_SERVO_PIN 5
 #define DOME_LEFT_SERVO_PIN 4
-#define DOME_SERVO_RAMP 3
-#define DOME_SERVO_SPEED 180 // 0-255, fastest to slowest
+#define DOME_SERVO_RAMP 5
+#define DOME_SERVO_SPEED 0 // 0-255, fastest to slowest
 #define DOME_TILT_X_MIN -58 // avoid hitting the drive gear
 #define DOME_TILT_X_MAX 75
 #define DOME_TILT_Y_MIN -70
@@ -28,11 +28,11 @@
 #define DOME_SPIN_IN1 53
 #define DOME_SPIN_IN2 49
 #define DOME_SPIN_POT A4
-#define DOME_SPIN_RAMP 15
+#define DOME_SPIN_RAMP 40
 #define DOME_SPIN_CENTER_POSITION 512
 
 /**
-* Main drive configuation.
+* Main drive configuration.
 */
 #define DRIVE_EN 29
 #define MAIN_DRIVE_FWD 13

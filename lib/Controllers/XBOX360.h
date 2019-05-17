@@ -82,7 +82,7 @@ class XBOX360: public Controller {
               int16_t lx = 0, ly =0, rx = 0, ry = 0;
               if (xbox.getAnalogHat(LeftHatX, i) > 7500 || xbox.getAnalogHat(LeftHatX, i) < -7500) {
                 lx = xbox.getAnalogHat(LeftHatX, i);
-                // get X, remove the deadband and map it to the correcvt range
+                // get X, remove the deadband and map it to the correct range
                 if (lx < -7500) {
                   lx = map(lx, -32768, -7500, -90, 0);
                 } else if (lx >= 7500) {
@@ -112,6 +112,7 @@ class XBOX360: public Controller {
                 } else {
                   rx = 0;
                 }
+                rx *= -1; // // TODO: Fix this 
               }
               if (xbox.getAnalogHat(RightHatY, i) > 7500 || xbox.getAnalogHat(RightHatY, i) < -7500) {
                 // Drive FWD/REV
@@ -124,6 +125,7 @@ class XBOX360: public Controller {
                 } else {
                   ry = 0;
                 }
+                ry *= -1; // TODO: Fix this 
               }
               droid->dome.setDomeXY(lx, ly);
               droid->drive.setSpeed(ry);
@@ -186,6 +188,9 @@ class XBOX360: public Controller {
               } else {
                 droid->sfx.playTrack(3, 0, 9, true);
               }
+            }
+            if (xbox.getButtonClick(R3)) {
+              // nothing yet
             }
 
           } else {

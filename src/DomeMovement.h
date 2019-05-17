@@ -7,7 +7,7 @@
 #include "MovementUtils.h"
 #include "VarSpeedServo.h"
 
-#define DOME_TASK_INTERVAL 10 // in millis
+#define DOME_TASK_INTERVAL 25 // in millis
 
 //#define DEBUG_DOME_MOVEMENT
 
@@ -116,7 +116,7 @@ class DomeMovement {
     }
 
   private:
-    unsigned long previousMillis = 0; // used to determine if loop shoudl run
+    unsigned long previousMillis = 0; // used to determine if loop should run
     VarSpeedServo leftServo;
     VarSpeedServo rightServo;
     int16_t currentX = 0, currentY = 0;
@@ -130,7 +130,7 @@ class DomeMovement {
     int16_t domeSpinCenterPos;
     int16_t targetDomePotPos;
 
-    bool center = false, reversed = true;
+    bool center = false, reversed = false;
     #ifdef DOME_SPIN_RAMP
       const uint8_t SPIN_RAMPING = DOME_SPIN_RAMP;
     #else

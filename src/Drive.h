@@ -63,12 +63,16 @@ class Drive {
       this->s2sStability.SetMode(AUTOMATIC);
       this->s2sStability.SetOutputLimits(-90, 90);
       this->s2sStability.SetSampleTime(15);
+      // Fwd/Rev stability setup
+      this->FR_stability.SetMode(AUTOMATIC);
+      this->FR_stability.SetOutputLimits(-90, 90);
+      this->FR_stability.SetSampleTime(15);
     }
 
     void setSpeed(int16_t speed) {
       if (enabled) {
         targetSpeed = constrain(speed, -255, 255);
-        if (!reversed)
+        if (reversed)
           targetSpeed *= -1;
       } else {
         targetSpeed = 0;
@@ -78,7 +82,7 @@ class Drive {
     void setTilt(int16_t x) {
       if (enabled) {
         sp_stability = constrain(x, -90, 90);
-        if (!reversed)
+        if (reversed)
           sp_stability *= -1;
       } else {
         sp_stability = 0;
@@ -96,8 +100,8 @@ class Drive {
         tilt();
       }
       #ifdef DEBUG_DRIVE_MOVEMENT
-        if (count == 100) {
-          Log.notice(F("Drive::task - FWD/REV (e: %T, t: %d, a: %d) "
+        if (count == 200) {
+          /**Log.notice(F("Drive::task - FWD/REV (e: %T, t: %d, a: %d) "
               "IMU (p: %D, r: %D) "
               "SBL (s: %D, i: %D, o: %D) "
               "S2S (p: %d, s: %D, i: %D, o: %D) "
@@ -106,7 +110,12 @@ class Drive {
             imu->data.pitch, imu->data.roll,
             this->sp_stability, this->input_stability, this->output_stability,
             this->s2s_pot, this->setPoint_S2S, this->input_S2S, this->output_S2S,
-            targetSpin, currentSpin);
+            targetSpin, currentSpin);**/
+          Serial.print(this->sp_stability);
+          Serial.print(',');
+          Serial.print(this->input_stability);
+          Serial.print(',');
+          Serial.println(this->output_stability);
           count = 0;
         } else {
           count++;
@@ -137,7 +146,7 @@ class Drive {
     void setSpin(int16_t speed) {
       if (enabled) {
         targetSpin = constrain(speed, -255, 255);
-        if (!reversed)
+        if (reversed)
           targetSpin *= -1;
       } else {
         targetSpin = 0;
@@ -145,11 +154,11 @@ class Drive {
     }
 
   private:
-    unsigned long previousMillis = 0; // used to determine if loop shoudl run
+    unsigned long previousMillis = 0; // used to determine if loop should run
     uint8_t enablePin = 0, FWDPin = 0, REVPin = 0, tiltEnablePin = 0,
       LEFTPin = 0, RIGHTPin = 0, spinEnablePin = 0, spinLeftPin = 0,
       spinRightPin =0;
-    boolean reversed = true, enabled = false;
+    boolean reversed = false, enabled = false;
     int16_t targetSpeed = 0, currentSpeed = 0;
     int16_t targetSpin = 0, currentSpin = 0;
     int16_t s2s_pot = 0;
@@ -158,28 +167,35 @@ class Drive {
 
     //PID settings for the S2S tilt (S2S - Servo)
     // 13, 0, .3 are Joe's values, after some tuning, I ended up here too, then
-    // changed it again and agian
+    // changed it again and again
     // or maybe 14, 0, 0.0 ???
-    //double pk_S2S = 9, ik_S2S = 0.03, dk_S2S = 0.05;
-    double pk_S2S = 10, ik_S2S = 0.035, dk_S2S = 0.05;
+    double pk_S2S = 14, ik_S2S = 0.035, dk_S2S = 0.05;
     double setPoint_S2S = 0, input_S2S = 0, output_S2S = 0;
     PID s2sServo = PID(&input_S2S, &output_S2S, &setPoint_S2S,
       pk_S2S, ik_S2S , dk_S2S, DIRECT);
 
     //PID setttings for S2S stability
-    double pK_stability = .95, iK_stability = .05,  dK_stability = 0.4;
-    //double pK_stability = .6, iK_stability = 0, dK_stability = .35;
+    //double pK_stability = .95, iK_stability = .05,  dK_stability = 0.4;
+    //double pK_stability = .6, iK_stability = .05, dK_stability = .35;
+    double pK_stability = 1.2, iK_stability = 0.05, dK_stability = 0.25;
+    //double pK_stability = .5, iK_stability = 0, dK_stability = 0.01;
     double sp_stability = 0, input_stability = 0, output_stability = 0;
     PID s2sStability = PID(&input_stability, &output_stability, &sp_stability,
       pK_stability, iK_stability, dK_stability, DIRECT);
+  
+    //PID setttings for FW stability
+    double pK_FR = 5, iK_FR = 0, dK_FR = 0;
+    double sp_FR = 0, input_FR = 0, output_FR = 0;
+    PID FR_stability = PID(&input_FR, &output_FR, &sp_FR,
+      pK_FR, iK_FR, dK_FR, DIRECT);
 
     #ifdef DEBUG_DRIVE_MOVEMENT
-      int count = 0;
+      uint8_t count = 0;  // debug only happens once every 100 cycles
     #endif
     #ifdef MAIN_DRIVE_RAMP
       const uint8_t DRIVE_RAMPING = MAIN_DRIVE_RAMP;
     #else
-      const uint8_t DRIVE_RAMPING = 5;
+      const uint8_t DRIVE_RAMPING = 1;
     #endif
     #ifdef S2S_LEAN_POT //override
       const uint8_t LEAN_POT = S2S_LEAN_POT;
@@ -203,12 +219,15 @@ class Drive {
     void move() {
       currentSpeed = MovementUtils::ease(currentSpeed,
         targetSpeed, DRIVE_RAMPING);
-      if (currentSpeed > 0){
-        analogWrite(FWDPin, abs(currentSpeed));
+      input_FR = imu->data.pitch;
+      sp_FR = currentSpeed;
+      FR_stability.Compute();
+      if (output_FR > 10){
+        analogWrite(FWDPin, abs(output_FR));
         analogWrite(REVPin, 0);
-      } else if (currentSpeed < 0) {
+      } else if (output_FR < -10) {
         analogWrite(FWDPin, 0);
-        analogWrite(REVPin, abs(currentSpeed));
+        analogWrite(REVPin, abs(output_FR));
       } else {
         analogWrite(FWDPin, 0);
         analogWrite(REVPin, 0);
@@ -240,21 +259,21 @@ class Drive {
 
     void tilt() {
       // stability
-      input_stability = map(imu->data.roll, -25, 25, -90, 90);
-      //input_stability = SmoothingUtils::smooth(input_stability,
-      //  .05, input_stability);
+      /**input_stability = map(
+        SmoothingUtils::smooth(imu->data.roll, .05, imu->data.roll),
+        -25, 25, -90, 90);**/
+      input_stability = SmoothingUtils::smooth(imu->data.roll, .05, imu->data.roll);
       s2sStability.Compute();
       setPoint_S2S = constrain(output_stability, -90, 90);
 
       //  smooth our potentiometer readings
-      s2s_pot = SmoothingUtils::smooth(analogRead(this->LEAN_POT), .05, s2s_pot);
-      //s2s_pot = analogRead(this->LEAN_POT);
+      s2s_pot = SmoothingUtils::smooth(analogRead(this->LEAN_POT), .05,
+                  s2s_pot);
       // TODO: Replace S2S_LEAN_MIN|MAX macros
+      // setPoint_S2S = sp_stability - input_stability;
       input_S2S = floor(map(s2s_pot,
           S2S_POT_MIN, S2S_POT_MAX, -90, 90));
       s2sServo.Compute();
-
-
       // send to motor controller
       if (output_S2S > 0) {
         analogWrite(LEFTPin, abs(output_S2S));
@@ -271,5 +290,6 @@ class Drive {
       else
         digitalWrite(this->tiltEnablePin, LOW);
     }
+
 };
 #endif //Drive_H_
