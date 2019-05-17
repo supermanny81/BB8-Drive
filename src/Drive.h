@@ -177,7 +177,8 @@ class Drive {
     //PID setttings for S2S stability
     //double pK_stability = .95, iK_stability = .05,  dK_stability = 0.4;
     //double pK_stability = .6, iK_stability = .05, dK_stability = .35;
-    double pK_stability = 1.2, iK_stability = 0.05, dK_stability = 0.25;
+    //double pK_stability = 1.2, iK_stability = 0.05, dK_stability = 0.25;
+    double pK_stability = 1.2, iK_stability = 0.05, dK_stability = 0.4;
     //double pK_stability = .5, iK_stability = 0, dK_stability = 0.01;
     double sp_stability = 0, input_stability = 0, output_stability = 0;
     PID s2sStability = PID(&input_stability, &output_stability, &sp_stability,
